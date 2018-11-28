@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>产线文档扫描结果</title>
+    <link rel="stylesheet" href="$rc.contextPath/resource/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="$rc.contextPath/resource/bootstrap/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="$rc.contextPath/resource/bootstrap/css/bootstrap-datetimepicker.min.css">
+    <script type="text/javascript" src="$rc.contextPath/resource/js/jquery.min.js"></script>
+    <script type="text/javascript" src="$rc.contextPath/resource/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="$rc.contextPath/resource/bootstrap/js/bootstrap-treeview.min.js"></script>
+    <script type="text/javascript" src="$rc.contextPath/resource/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript"
+            src="$rc.contextPath/resource/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">文档扫描查询条件</div>
+            <div class="panel-body">
+                <form id="searchForm">
+                    <div class="col-md-12 form-horizontal">
+                        <input type="hidden" id="page" name="page" value="$!page">
+                        <div class="form-group col-md-4">
+                            <label for="line" class="control-label col-md-4">产线</label>
+                            <div class="col-md-8">
+                                <select class="form-control" name="line" id="line">
+                                    <option VALUE="">ALL</option>
+                                    <option VALUE="A1">A1</option>
+                                    <option VALUE="A2">A2</option>
+                                    <option VALUE="A3">A3</option>
+                                    <option VALUE="A4">A4</option>
+                                    <option VALUE="A5">A5</option>
+                                    <option VALUE="A6">A6</option>
+                                    <option VALUE="A7">A7</option>
+                                    <option VALUE="A8">A8</option>
+                                    <option VALUE="A9">A9</option>
+                                    <option VALUE="A10">A10</option>
+                                    <option VALUE="A11">A11</option>
+                                    <option VALUE="A12">A12</option>
+                                    <option VALUE="A13">A13</option>
+                                    <option VALUE="C1">C1</option>
+                                    <option VALUE="C2">C2</option>
+                                    <option VALUE="C3">C3</option>
+                                    <option VALUE="C4">C4</option>
+                                    <option VALUE="C5">C5</option>
+                                    <option VALUE="C6">C6</option>
+                                    <option VALUE="C7">C7</option>
+                                    <option VALUE="C8">C8</option>
+                                    <option VALUE="C9">C9</option>
+                                    <option VALUE="C10">C10</option>
+                                    <option VALUE="C11">C11</option>
+                                    <option VALUE="C12">C12</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="no" class="control-label col-md-4">卡板号</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="no" name="no" placeholder="请输入卡板号"
+                                       value="$!scan.no">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="mac" class="control-label col-md-4">MAC</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="mac" name="mac" placeholder="请输入MAC"
+                                       value="$!scan.mac">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 form-horizontal">
+                        <div class="form-group col-md-4">
+                            <label for="startTime" class="control-label col-md-4">开始日期</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="startTime" name="startTime"
+                                       value="$!startTime">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="endTime" class="control-label col-md-4">结束日期</label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="endTime" name="endTime" value="$!endTime">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="result" class="control-label col-md-4">RESULT</label>
+                            <div class="col-md-8">
+                                <select name="result" id="result" class="form-control">
+                                    <option value="0">All</option>
+                                    <option value="1" #if($!scan.result== 1) selected #end>OK</option>
+                                    <option value="2" #if($!scan.result== 2) selected #end>NG</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="col-md-12">
+                    <div class="col-md-4 col-md-push-4" style="margin: auto">
+                        <button type="button" value="查询" onclick="search();" class="btn btn-default">查询</button>
+                        <a href="$rc.contextPath/scan/scan.html" class="btn btn-default">新增扫描</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">文档扫描查询结果</div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>MAC</th>
+                            <th>产线</th>
+                            <th>卡板号</th>
+                            <th>产品型号</th>
+                            <th>时间</th>
+                            <th>F1</th>
+                            <th>F2</th>
+                            <th>RC</th>
+                            <th>结果</th>
+                            <th>录入时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        #if($pager)
+                        #foreach($scan in $pager.data)
+                        <tr>
+                            <td>$!velocityCount</td>
+                            <td><a data-toggle="modal" href="$rc.contextPath/scan/scanResult.html?mac=$!{scan.mac}" data-target="#modal">$!{scan.mac}</a></td>
+                            <td>$!{scan.line}</td>
+                            <td>$!{scan.no}</td>
+                            <td>$!{scan.model}</td>
+                            <td>$!{scan.start_time}</td>
+                            <td>$!{scan.f1}</td>
+                            <td>$!{scan.f2}</td>
+                            <td>$!{scan.f3}</td>
+                            #if($!{scan.result} == "1")
+                            <td class="text-success">OK</td>
+                            #else
+                            <td class="text-danger">NG</td>
+                            #end
+                            <td>$!{scan.create_time}</td>
+                        </tr>
+                        #end
+                        #end
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-offset-5">
+                            #if($pager)
+                            <nav aria-label="page navigation">
+                                <ul class="pagination">
+                                    <li class="#if(${pager.curPage} == 1) disabled #end ">
+                                        #if(${pager.curPage} == 1)
+                                        <span aria-hidden="true">上一页</span>
+                                        #else
+                                        #set($pre = ${pager.curPage} - 1)
+                                        <a href="javascript:void(0);" onclick="page('$pre')" aria-label="上一页">
+                                            <span aria-hidden="true">上一页</span>
+                                        </a>
+                                        #end
+                                    </li>
+                                    <li class="#if(${pager.data.size()} < 20) disabled #end">
+                                        #if(${pager.data.size()} < 20)
+                                        <span aria-hidden="true">下一页</span>
+                                        #else
+                                        #set($next = ${pager.curPage} + 1)
+                                        <a href="javascript:void(0);" onclick="page('$next')" aria-label="下一页">
+                                            <span aria-hidden="true">下一页</span>
+                                        </a>
+                                        #end
+                                    </li>
+                                    <li>
+                                        <span>当前 #if(${pager.totalRow} ==0) 0 #else ${pager.curPage} #end页,共 ${pager.totalPage} 页，共${pager.totalRow}条数据</span>
+                                    </li>
+                                </ul>
+                            </nav>
+                            #end
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal bs-example-modal-lg" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">扫描结果</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var line = "$!scan.line";
+        $("#line").val(line);
+    });
+
+    $("#startTime").datetimepicker({
+        language: 'zh-CN',//显示中文
+        format: 'yyyy-mm-dd',
+        minView: 'day',
+        autoclose: true,
+    }).on("click", function () {
+        $("#startTime").datetimepicker("setEndDate", new Date());
+    });
+    $("#endTime").datetimepicker({
+        language: 'zh-CN',//显示中文
+        format: 'yyyy-mm-dd',
+        minView: 'day',
+        autoclose: true,
+    }).on("click", function () {
+        $("#endTime").datetimepicker("setStartDate", $("#startTime".val()));
+    });
+
+    function page(currPage) {
+        $("#page").val(currPage);
+        $("#searchForm").submit();
+    }
+    function search() {
+        $("#page").val(1);
+        $("#searchForm").submit();
+    }
+</script>
+</body>
+</html>

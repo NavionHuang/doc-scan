@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>mac扫描记录</title>
+    <link rel="stylesheet" href="$rc.contextPath/resource/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="$rc.contextPath/resource/bootstrap/css/bootstrap-theme.css">
+    <script type="text/javascript" src="$rc.contextPath/resource/js/jquery.min.js"></script>
+    <script type="text/javascript" src="$rc.contextPath/resource/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="$rc.contextPath/resource/bootstrap/js/bootstrap-treeview.min.js"></script>
+    <style type="text/css">
+        .loading-bg {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            height: 100%;
+            width: 100%;
+            background: white;
+            opacity: 0.4;
+            filter: alpha(opacity=40)
+        }
+
+        .loading-context {
+            width: 300px;
+            height: 56px;
+            position: absolute;
+            top: 50%;
+            left: 40%;
+            line-height: 56px;
+            color: #fff;
+            padding-left: 60px;
+            font-size: 15px;
+            background: #000 url("$rc.contextPath/resource/image/loading.gif") no-repeat 10px 50%;
+            opacity: 0.7;
+            z-index: 9999;
+            -moz-border-radius: 20px;
+            -webkit-border-radius: 20px;
+            border-radius: 20px;
+            filter: progid:DXImageTransform.Microsoft.Alpha(opacity=70);
+        }
+    </style>
+</head>
+<body>
+<div class="loading-bg" style="display: none">
+    <div id="loading" class="loading-context">正在提交...</div>
+</div>
+<header>
+    <div class="container">
+        <div class="text-center"><h1>文档扫描</h1></div>
+        <hr>
+    </div>
+</header>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div id="tree" class="bg-info"></div>
+        </div>
+        <div class="col-md-9">
+            <div>
+                <form class="form-inline" name="addForm" onsubmit="return false;">
+                    <fieldset>
+                        <div class="form-group">
+                            <label for="mac">产线:</label>
+                            <div class="input-group">
+                                <select class="form-control" name="line" id="line">
+                                    <option VALUE="">请选择</option>
+                                    <option VALUE="A1">A1</option>
+                                    <option VALUE="A2">A2</option>
+                                    <option VALUE="A3">A3</option>
+                                    <option VALUE="A4">A4</option>
+                                    <option VALUE="A5">A5</option>
+                                    <option VALUE="A6">A6</option>
+                                    <option VALUE="A7">A7</option>
+                                    <option VALUE="A8">A8</option>
+                                    <option VALUE="A9">A9</option>
+                                    <option VALUE="A10">A10</option>
+                                    <option VALUE="A11">A11</option>
+                                    <option VALUE="A12">A12</option>
+                                    <option VALUE="A13">A13</option>
+                                    <option VALUE="C1">C1</option>
+                                    <option VALUE="C2">C2</option>
+                                    <option VALUE="C3">C3</option>
+                                    <option VALUE="C4">C4</option>
+                                    <option VALUE="C5">C5</option>
+                                    <option VALUE="C6">C6</option>
+                                    <option VALUE="C7">C7</option>
+                                    <option VALUE="C8">C8</option>
+                                    <option VALUE="C9">C9</option>
+                                    <option VALUE="C10">C10</option>
+                                    <option VALUE="C11">C11</option>
+                                    <option VALUE="C12">C12</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="mac">卡板号:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="no" id="no" value="$!no">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="mac">MAC:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control"
+                                       onkeydown="javascript:if(event.keyCode==13) addRow();"
+                                       id="mac">
+                                <span class="input-group-btn">
+                                <button type="button" class="btn btn-info" onclick="addRow();return false;">新增</button>
+                            </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-info" onclick="submitRows();return false;">提交</button>
+                            <a href="$rc.contextPath/scan/index.html" class="btn btn-link">查看结果</a>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div>
+                <hr>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>产线</th>
+                        <th>卡板号</th>
+                        <th>MAC</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    #if($!list)
+                    #foreach($scan in $!list)
+                    <tr>
+                        <td>#set($index = $!{list.size()} + 1 - $!velocityCount) $!index</td>
+                        <td>$!scan.line</td>
+                        <td>$!scan.no</td>
+                        <td>$!scan.mac</td>
+                    </tr>
+                    #end
+                    #end
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+    	
+        var line = "$!line";
+        $("#line").val(line);
+        $("#line").on("change", function () {
+            var no = $("#no").val();
+            var line = $(this).val();
+            if (no && line) {
+                window.location.href = "$rc.contextPath/scan/scan.html?no=" + no + "&line=" + line;
+            }
+        });
+        $("#no").on("blur", function () {
+            var no = $("#no").val();
+            var line = $("#line").val();
+            if (no && line) {
+                window.location.href = "$rc.contextPath/scan/scan.html?no=" + no + "&line=" + line;
+            }
+        });
+    });
+    function getTree() {
+        var dataTree;
+        $.ajax({
+            url: '$rc.contextPath/scan/ftp/directory.json',
+            type: 'POST',
+            async: false,
+            success: function (data) {
+                dataTree = data;
+            }
+        });
+        return dataTree;
+    }
+
+    $('#tree').treeview({
+        data: getTree(),//Array of Objects	无	列表树上显示的数据。
+        levels: 5,//Integer	Default: 2	设置继承树默认展开的级别。
+        multiSelect: true,//Boolean	false	是否可以同时选择多个节点。
+        collapseIcon: "glyphicon glyphicon-folder-open",
+        expandIcon: "glyphicon glyphicon-folder-open",
+        backColor: "#d9edf7"
+    });
+
+
+    function addRow() {
+        var macPatten = /^(([0-9a-f]{2}:)|[0-9a-f]{2}){5}[0-9a-f]{2}$/gi;
+        var mac = $("#mac").val();
+        mac = mac.trim();
+        var no = $("#no").val();
+        var line = $("#line").val();
+        if (!line) {
+            alert("请选择产线");
+            return;
+        }
+        if (!no) {
+            alert("请输入卡板号");
+            return;
+        }
+        if (macPatten.test(mac)) {
+            $.ajax({
+                url: '$rc.contextPath/scan/addScan',
+                type: 'POST',
+                data: {'mac': mac, 'no': no, 'line': line},
+                success: function (data) {
+                    if (data > 0) {
+                        var trs = $("table tbody").children();
+                        //var last = trs.last();
+                        var first = trs.first();
+                        if (trs.length <= 186) {
+                            $("table tbody").prepend(first.clone());
+                            $(first).children().eq(0).html(trs.length);
+                            $(first).children().eq(1).html(line);
+                            $(first).children().eq(2).html(no);
+                            $(first).children().eq(3).html(mac);
+                            /*$("table tbody").append(last.clone());
+                            $(last).children().eq(0).html(trs.length);
+                            $(last).children().eq(1).html(line);
+                            $(last).children().eq(2).html(no);
+                            $(last).children().eq(3).html(mac);
+                            */
+                            $("#mac").val('');
+                            $("#mac").focus();
+                        } else {
+                            alert("不能添加行，已超出186");
+                        }
+                    } else if (data == 0) {
+                        alert("该MAC已添加过，不能重复添加");
+                    }
+                },
+                error: function (e) {
+                    alert("系统出错");
+                }
+            });
+
+
+        } else {
+            alert("数据格式不正确");
+        }
+        return false;
+    }
+    var intervalId = null;
+
+    function submitRows() {
+        var selectedNodes = $('#tree').treeview('getSelected');
+        if (selectedNodes == null || selectedNodes.length == 0) {
+            alert("请选择文件路径");
+            return;
+        }
+        var no = $("#no").val();
+        var line = $("#line").val();
+        if (!line) {
+            alert("请选择产线");
+            return;
+        }
+        if (!no) {
+            alert("请输入卡板号");
+            return;
+        }
+        var paths = [];
+        $.each(selectedNodes, function (i, obj) {
+            var parenNode = $('#tree').treeview('getParent', obj);
+            if (!!parenNode) {
+                paths.push(parenNode.text + "/" + obj.text);
+            }
+        });
+        $(".loading-bg").show();
+        $.ajax({
+            url: '$rc.contextPath/scan/submitScan.html',
+            type: 'POST',
+            async: true,
+            data: {'paths': paths, 'no': no, 'line': line},
+            success: function (data) {
+                if (data > 0) {
+                    intervalId = setInterval(getScanStatus, 10000);
+                } else {
+                    $(".loading-bg").hide();
+                    alert("提交失败，请重试");
+                }
+            },
+            error: function (e) {
+                $(".loading-bg").hide();
+                alert("系统出错");
+            }
+        });
+    }
+
+    function getScanStatus() {
+        var no = $("#no").val();
+        var line = $("#line").val();
+        $.ajax({
+            url: "$rc.contextPath/scan/scanstatus",
+            async: true,
+            success: function (data) {
+                if (0 == data) {
+                    $(".loading-bg").hide();
+                    clearInterval(intervalId);
+                    window.location.href = "$rc.contextPath/scan/index.html?result=0&no=" + no + "&line=" + line;
+                } else if (-1 == data) {
+                    $(".loading-bg").hide();
+                    clearInterval(intervalId);
+                    alert("提交失败，请重试");
+                }
+            },
+            error: function (e) {
+                clearInterval(intervalId);
+                $(".loading-bg").hide();
+                alert("系统出错");
+            }
+        });
+    }
+</script>
+</body>
+</html>
